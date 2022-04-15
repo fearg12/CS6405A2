@@ -1,0 +1,27 @@
+# svm for assignment 2
+#importing necessary packages
+import pandas as pd
+import numpy as np 
+from sklearn.model_selection import cross_val_score
+from sklearn import svm
+from sklearn import neighbors
+from sklearn import model_selection
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+
+
+df = pd.read_csv("https://github.com/andvise/DataAnalyticsDatasets/blob/main/dm_assignment2/sat_dataset_test.csv?raw=true") #read in data
+df.replace([np.inf, -np.inf], np.nan, inplace=True) #replace infinte values with nan
+df = df.fillna(0) #replace nan with 0
+targ = df['target'] #make targ with only target column
+df2 = df.drop(['target'], axis=1) #drop target from main
+t2 = targ.copy() #make a copy
+X_train, X_test, y_train, y_test = train_test_split(df2, t2, test_size=0.2, random_state=0) #test size of 0.2 produced the largets accuracy # split testtrain
+scaler = MinMaxScaler() #scale data
+X_train = scaler.fit_transform(X_train) #scale training
+X_test = scaler.transform(X_test)#scale test
+model = svm.SVC(kernel = 'poly', C=15, gamma = 1, degree = 1,) # Poly kernel the best for accuracy followed by rbf after trialling
+model.fit(X_train, y_train) #Fit Model
+labelpredict = model.predict(X_test) #Test
+accuracy = sum(labelpredict==y_test)/y_test.shape[0] #accuracy calculation
+print("SVM Accuracy:", accuracy)
